@@ -1,0 +1,9 @@
+{
+  "name": "zefti-utils",
+  "description": "Assortment of random utility functions",
+  "author": "Ryan Ogle",
+  "dependencies": {
+  },
+  "private": false,
+  "version": "0.0.1"
+}
