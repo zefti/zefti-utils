@@ -87,7 +87,67 @@ module.exports = function(options) {
       obj[name] = require(methods.createPath(dir, file));
     });
     return obj;
-  }
+  };
+
+  methods.reduce3ObjAndCb = function(payload){
+    var args = Array.prototype.slice.call(payload);
+    if (args.length === 4) return args;
+    if (args.length === 3 && this.type(args[2]) === 'function') {
+      args.splice(2, 0, {});
+      return args;
+    }
+    if (args.length === 3) {
+      args[3] = function(){};
+      return args;
+    }
+    if (args.length === 2 && this.type(args[1]) === 'function') {
+      args.splice(1, 0, {}, {});
+      return args;
+    }
+    if (args.length === 2) {
+      args[2] = {};
+      args[3] = function(){};
+      return args;
+    }
+    if (args.length === 1 && this.type(args[0]) === 'function') {
+      args.splice(0, 0, {}, {}, {});
+      return args;
+    }
+    if (args.length === 1) {
+      args[1] = {};
+      args[2] = {};
+      args[3] = function(){};
+      return args;
+    }
+    if (args.length === 0) throw new Error('reduce arguments - no arguments provided');
+  };
+
+  methods.validateEmail = function(email) {
+    var str = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+    return str.test(email);
+  };
+
+  methods.validatePhoneNumber = function(phoneNumber){
+    var str = phoneNumber.replace(/[^0-9]+/g, '');
+  };
+
+  methods.createDirectory = function(directory, mask) {
+    if (!mask) {
+      var mask = 0777;
+    }
+    var dirArr = directory.split('/');
+    var dirPath = '';
+    dirArr.forEach(function(segment){
+      if (segment) {
+        dirPath = dirPath + '/' + segment;
+        try {
+          fs.mkdirSync(dirPath, mask);
+        } catch (err) {
+          if (err && err.code !== 'EEXIST') throw new Error(err);
+        }
+      }
+    });
+  };
 
   return methods;
 
