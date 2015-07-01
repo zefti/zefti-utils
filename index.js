@@ -3,8 +3,6 @@ var crypto = require('crypto');
 var _ = require('underscore');
 var uuid = require('node-uuid');
 
-module.exports = function(options) {
-
   var methods = {};
 
   methods.encryptPassword = function (salt, password) {
@@ -137,9 +135,14 @@ module.exports = function(options) {
     }
     var dirArr = directory.split('/');
     var dirPath = '';
-    dirArr.forEach(function(segment){
+    dirArr.forEach(function(segment, index){
       if (segment) {
-        dirPath = dirPath + '/' + segment;
+        if (segment === '~' || segment === '.' || segment === '..' && index === 0) {
+          dirPath = segment;
+          return;
+        } else {
+          dirPath = dirPath + '/' + segment;
+        }
         try {
           fs.mkdirSync(dirPath, mask);
         } catch (err) {
@@ -149,6 +152,19 @@ module.exports = function(options) {
     });
   };
 
-  return methods;
 
-};
+  methods.deleteFolderRecursive = function(path) {
+    if( fs.existsSync(path) ) {
+      fs.readdirSync(path).forEach(function(file,index){
+        var curPath = path + "/" + file;
+        if(fs.lstatSync(curPath).isDirectory()) { // recurse
+          deleteFolderRecursive(curPath);
+        } else { // delete file
+          fs.unlinkSync(curPath);
+        }
+      });
+      fs.rmdirSync(path);
+    }
+  };
+
+module.exports = methods;
