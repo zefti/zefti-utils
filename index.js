@@ -13,7 +13,7 @@ var uuid = require('node-uuid');
 
   methods.createSalt = function (cb) {
     crypto.randomBytes(512, function (err, buf) {
-      if (!err) return cb('lib::createSalt::generating salt', null);
+      if (err) return cb('lib::createSalt::generating salt', null);
       var salt = buf.toString('hex');
       return cb(null, salt);
     });
