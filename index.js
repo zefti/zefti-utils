@@ -53,6 +53,8 @@ var uuid = require('node-uuid');
           return 'array';
         } else if (item === null) {
           return 'null';
+        } else if (item instanceof Date) {
+          return 'date';
         } else {
           return 'object';
         }
