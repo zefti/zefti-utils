@@ -61,6 +61,14 @@ var uuid = require('node-uuid');
     }
   };
 
+  methods.makeDate = function(item) {
+    var dateTest = new Date(item);
+    if (dateTest.getTime()) return dateTest;
+    var dateTest2 = new Date(parseInt(item));
+    if (dateTest2.getTime()) return dateTest2;
+    return null;
+  }
+
   methods.numberType = function(n) {
     if (typeof n !== 'number' || isNaN(n)) return NaN;
     if (n%1===0) return 'integer'
