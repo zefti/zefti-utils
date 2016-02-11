@@ -177,4 +177,30 @@ var uuid = require('node-uuid');
     }
   };
 
+  methods.resolve5Arguments = function(arguments){
+    return resolveArguments(arguments, 5);
+  };
+
+  methods.resolve4Arguments = function(arguments){
+    return resolveArguments(arguments, 4);
+  };
+
+  methods.resolve3Arguments = function(arguments){
+    return resolveArguments(arguments, 3);
+  };
+
+  function resolveArguments(arguments, num){
+    var intArgs = [];
+    var newArgs = Array.prototype.slice.call(arguments);
+    if (newArgs.length === num) return newArgs;
+    if (newArgs.length > 1) {
+      intArgs[num-1] = newArgs.splice([newArgs.length - 1])[0] || function(){};
+      num -= 1;
+    }
+    for(var i=0;i<num; i++){
+      intArgs[i] = newArgs[i] || {};
+    }
+    return intArgs;
+  }
+
 module.exports = methods;
