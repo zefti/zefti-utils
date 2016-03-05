@@ -177,6 +177,31 @@ var uuid = require('node-uuid');
     }
   };
 
+  methods.fileExists = function(path){
+    try {
+      stats = fs.statSync(path);
+      if (stats) return true;
+    }
+    catch (e) {
+      return false;
+    }
+  };
+
+  methods.getConnectionIds = function(uid1, uid2){
+    var connection1 = uid1.toString() + uid2.toString();
+    var connection2 = uid2.toString() + uid1.toString();
+
+    var hashedConnection1 = crypto.createHash('md5').update(connection1).digest("hex");
+    var hashedConnection2 = crypto.createHash('md5').update(connection2).digest("hex");
+
+    var result = {};
+    result[uid1.toString()] = hashedConnection1;
+    result[uid2.toString()] = hashedConnection2;
+
+    return result;
+
+  };
+
   methods.resolve5Arguments = function(arguments){
     return resolveArguments(arguments, 5);
   };
