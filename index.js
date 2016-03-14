@@ -1,7 +1,10 @@
 var fs = require('fs');
 var crypto = require('crypto');
 var _ = require('underscore');
+var parser = require('socket.io-parser');
+var hasBin = require('has-binary');
 var uuid = require('node-uuid');
+var msgpack = require('msgpack-js');
 
   var methods = {};
 
@@ -227,5 +230,15 @@ var uuid = require('node-uuid');
     }
     return intArgs;
   }
+
+methods.prepareSocketIo = function(channel, type, data, appName){
+  var packet = {};
+  packet.type = 2//hasBin(args) ? parser.BINARY_EVENT : parser.EVENT;
+  packet.data = [type, data];
+  packet.nsp = '/' + appName;
+  var fullChannel =  'zefti#' + '/' + appName + '#' + channel + '#';
+  var encodedData = msgpack.encode(['emitter', packet, { rooms:[channel] } ]);
+  return {fullChannel:fullChannel, encodedData:encodedData};
+};
 
 module.exports = methods;
