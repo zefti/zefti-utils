@@ -205,32 +205,6 @@ var msgpack = require('msgpack-js');
 
   };
 
-  methods.resolve5Arguments = function(arguments){
-    return resolveArguments(arguments, 5);
-  };
-
-  methods.resolve4Arguments = function(arguments){
-    return resolveArguments(arguments, 4);
-  };
-
-  methods.resolve3Arguments = function(arguments){
-    return resolveArguments(arguments, 3);
-  };
-
-  function resolveArguments(arguments, num){
-    var intArgs = [];
-    var newArgs = Array.prototype.slice.call(arguments);
-    if (newArgs.length === num) return newArgs;
-    if (newArgs.length > 1) {
-      intArgs[num-1] = newArgs.splice([newArgs.length - 1])[0] || function(){};
-      num -= 1;
-    }
-    for(var i=0;i<num; i++){
-      intArgs[i] = newArgs[i] || {};
-    }
-    return intArgs;
-  }
-
 methods.prepareSocketIo = function(channel, type, data, appName){
   var packet = {};
   packet.type = 2//hasBin(args) ? parser.BINARY_EVENT : parser.EVENT;
@@ -240,5 +214,74 @@ methods.prepareSocketIo = function(channel, type, data, appName){
   var encodedData = msgpack.encode(['emitter', packet, { rooms:[channel] } ]);
   return {fullChannel:fullChannel, encodedData:encodedData};
 };
+
+methods.deepMerge = function(target, source) {
+  for (var key in source) {
+    var original = target[key];
+    var next = source[key];
+    if (original && next && typeof next == "object") {
+      this.deepMerge(original, next);
+    } else {
+      target[key] = next;
+    }
+  }
+  return target;
+};
+
+methods.addOptionalFields = function(optionalFields, fields, payload){
+  optionalFields.forEach(function(field){
+    if (payload[field]) fields[field] = payload[field];
+  });
+  return fields;
+};
+
+
+
+methods.resolve5Arguments = function(){
+  return resolveArguments(arguments, 5);
+};
+
+methods.resolve4Arguments = function(){
+  return resolveArguments(arguments, 4);
+};
+
+methods.resolve3Arguments = function(){
+  return resolveArguments(arguments, 3);
+};
+/*
+function resolveArguments(arguments, num){
+  var intArgs = [];
+  var newArgs = Array.prototype.slice.call(arguments);
+  if (newArgs.length === num) return newArgs;
+  console.log(newArgs.length)
+  if (newArgs.length > 1) {
+    console.log('ding')
+    intArgs[num-1] = newArgs.splice([newArgs.length - 1])[0] || function(){};
+    num -= 1;
+  }
+  console.log(intArgs);
+  for(var i=0;i<num; i++){
+    intArgs[i] = newArgs[i] || {};
+  }
+  return intArgs;
+}*/
+
+
+function resolveArguments(arguments, num){
+  var intArgs = [];
+  var newArgs = Array.prototype.slice.call(arguments);
+  if (newArgs.length === num) return newArgs;
+  if (newArgs.length > num) throw new Error('too many arguments provided to reduce');
+  if (methods.type(newArgs[newArgs.length-1]) === 'function') {
+    intArgs[num - 1] = newArgs.splice(newArgs.length-1, 1)[0]
+  } else {
+    intArgs[num - 1] = function(){};
+  }
+  num--;
+  for(var i=0;i<num; i++){
+    intArgs[i] = newArgs[i] || {};
+  }
+  return intArgs;
+}
 
 module.exports = methods;
