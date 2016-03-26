@@ -248,6 +248,10 @@ methods.resolve4Arguments = function(){
 methods.resolve3Arguments = function(){
   return resolveArguments(arguments, 3);
 };
+
+methods.resolve2Arguments = function(){
+  return resolveArguments(arguments, 2);
+};
 /*
 function resolveArguments(arguments, num){
   var intArgs = [];
