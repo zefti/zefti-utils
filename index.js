@@ -64,13 +64,19 @@ var msgpack = require('msgpack-js');
     }
   };
 
+  methods.isEmpty = function(item){
+    if (this.type(item) === 'object'){
+      return Object.keys(item).length === 0 && JSON.stringify(item) === JSON.stringify({});
+    }
+  };
+
   methods.makeDate = function(item) {
     var dateTest = new Date(item);
     if (dateTest.getTime()) return dateTest;
     var dateTest2 = new Date(parseInt(item));
     if (dateTest2.getTime()) return dateTest2;
     return null;
-  }
+  };
 
   methods.numberType = function(n) {
     if (typeof n !== 'number' || isNaN(n)) return NaN;
@@ -98,39 +104,6 @@ var msgpack = require('msgpack-js');
       obj[name] = require(methods.createPath(dir, file));
     });
     return obj;
-  };
-
-  methods.reduce3ObjAndCb = function(payload){
-    var args = Array.prototype.slice.call(payload);
-    if (args.length === 4) return args;
-    if (args.length === 3 && this.type(args[2]) === 'function') {
-      args.splice(2, 0, {});
-      return args;
-    }
-    if (args.length === 3) {
-      args[3] = function(){};
-      return args;
-    }
-    if (args.length === 2 && this.type(args[1]) === 'function') {
-      args.splice(1, 0, {}, {});
-      return args;
-    }
-    if (args.length === 2) {
-      args[2] = {};
-      args[3] = function(){};
-      return args;
-    }
-    if (args.length === 1 && this.type(args[0]) === 'function') {
-      args.splice(0, 0, {}, {}, {});
-      return args;
-    }
-    if (args.length === 1) {
-      args[1] = {};
-      args[2] = {};
-      args[3] = function(){};
-      return args;
-    }
-    if (args.length === 0) throw new Error('reduce arguments - no arguments provided');
   };
 
   methods.validateEmail = function(email) {
@@ -237,19 +210,19 @@ methods.addOptionalFields = function(optionalFields, fields, payload){
 
 
 
-methods.resolve5Arguments = function(){
+methods.resolve5Arguments = function(arguments){
   return resolveArguments(arguments, 5);
 };
 
-methods.resolve4Arguments = function(){
+methods.resolve4Arguments = function(arguments){
   return resolveArguments(arguments, 4);
 };
 
-methods.resolve3Arguments = function(){
+methods.resolve3Arguments = function(arguments){
   return resolveArguments(arguments, 3);
 };
 
-methods.resolve2Arguments = function(){
+methods.resolve2Arguments = function(arguments){
   return resolveArguments(arguments, 2);
 };
 /*
