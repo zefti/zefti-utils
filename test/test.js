@@ -198,6 +198,21 @@ describe('resolve4Arguments', function(){
     done();
   });
 
+  it('should resolve 1 string and 1 function to 1 string, 2 objects and a function', function(done){
+    var func = function(){
+      return 7;
+    };
+    var args = utils.resolve4Arguments(['foo', func]);
+    assert.equal(args.length, 4);
+    assert.equal(type(args[0]), 'string');
+    assert.equal(args[0], 'foo');
+    assert.equal(type(args[1]), 'object');
+    assert.equal(type(args[2]), 'object');
+    assert.equal(type(args[3]), 'function');
+    assert.equal(args[3](), 7);
+    done();
+  })
+
 });
 
 describe('resolve3Arguments', function(){
